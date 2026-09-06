@@ -19,7 +19,7 @@ SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com").strip()
 SMTP_PORT = int(os.environ.get("SMTP_PORT", "465").strip())
 SMTP_USERNAME = os.environ.get("SMTP_USERNAME", "")
 SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
-ALERT_RECIPIENT = os.environ.get("ALERT_RECIPIENT", "")
+ALERT_RECIPIENT_RAW = os.environ.get("ALERT_RECIPIENT", "")
 
 # Auto-sanitize credentials: remove invisible non-breaking spaces (\xa0) and normal spaces
 if SMTP_USERNAME:
@@ -27,8 +27,14 @@ if SMTP_USERNAME:
 if SMTP_PASSWORD:
     # Google App Passwords are 16 characters with no spaces
     SMTP_PASSWORD = SMTP_PASSWORD.replace("\xa0", "").replace(" ", "").strip()
-if ALERT_RECIPIENT:
-    ALERT_RECIPIENT = ALERT_RECIPIENT.replace("\xa0", "").strip()
+
+# Split multiple comma-separated recipients and strip whitespace/\xa0
+ALERT_RECIPIENTS = [
+    email.replace("\xa0", "").strip()
+    for email in ALERT_RECIPIENT_RAW.split(",")
+    if email.strip()
+]
+
 
 
 REGIONS = ["national", "north", "south", "east", "west", "central"]
