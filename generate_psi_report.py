@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
+import smtplib
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
