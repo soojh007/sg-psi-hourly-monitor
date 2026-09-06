@@ -15,11 +15,21 @@ API_BASE_URL = "https://api-open.data.gov.sg/v2/real-time/api/psi"
 SGT = timezone(timedelta(hours=8))
 
 # Configuration from Environment Variables
-SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
-SMTP_PORT = int(os.environ.get("SMTP_PORT", "465"))
-SMTP_USERNAME = os.environ.get("SMTP_USERNAME")
-SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD")
-ALERT_RECIPIENT = os.environ.get("ALERT_RECIPIENT")
+SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com").strip()
+SMTP_PORT = int(os.environ.get("SMTP_PORT", "465").strip())
+SMTP_USERNAME = os.environ.get("SMTP_USERNAME", "")
+SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
+ALERT_RECIPIENT = os.environ.get("ALERT_RECIPIENT", "")
+
+# Auto-sanitize credentials: remove invisible non-breaking spaces (\xa0) and normal spaces
+if SMTP_USERNAME:
+    SMTP_USERNAME = SMTP_USERNAME.replace("\xa0", "").strip()
+if SMTP_PASSWORD:
+    # Google App Passwords are 16 characters with no spaces
+    SMTP_PASSWORD = SMTP_PASSWORD.replace("\xa0", "").replace(" ", "").strip()
+if ALERT_RECIPIENT:
+    ALERT_RECIPIENT = ALERT_RECIPIENT.replace("\xa0", "").strip()
+
 
 REGIONS = ["national", "north", "south", "east", "west", "central"]
 REGION_COLORS = {
