@@ -2,9 +2,9 @@ name: Hourly Singapore PSI Report with 24h Chart
 
 on:
   schedule:
-    # Runs at minute 5 of every hour (00:05, 01:05, 02:05, ..., 23:05 SGT)
-    - cron: '20 * * * *'
-  workflow_dispatch: # Allows manual testing from the GitHub UI
+    # Runs every 5 minutes for testing
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
 
 jobs:
   send-hourly-report:
