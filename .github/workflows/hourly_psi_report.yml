@@ -1,0 +1,36 @@
+name: Hourly Singapore PSI Report with 24h Chart
+
+on:
+  schedule:
+    # Runs at minute 5 of every hour (00:05, 01:05, 02:05, ..., 23:05 SGT)
+    - cron: '5 * * * *'
+  workflow_dispatch: # Allows manual testing from the GitHub UI
+
+jobs:
+  send-hourly-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate 24-Hour Chart and Send Email
+        env:
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          ALERT_RECIPIENT: ${{ secrets.ALERT_RECIPIENT }}
+        run: |
+          python generate_psi_report.py
