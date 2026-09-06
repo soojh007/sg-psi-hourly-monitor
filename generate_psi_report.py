@@ -35,8 +35,6 @@ ALERT_RECIPIENTS = [
     if email.strip()
 ]
 
-
-
 REGIONS = ["national", "north", "south", "east", "west", "central"]
 REGION_COLORS = {
     "national": "#111827",  # Charcoal / Dark line
@@ -161,8 +159,8 @@ def get_band_details(psi: int) -> tuple[str, str]:
 
 
 def send_email_report(latest_ts: datetime, latest_readings: dict, chart_path: str):
-    if not all([SMTP_USERNAME, SMTP_PASSWORD, ALERT_RECIPIENT]):
-        print("Missing SMTP credentials. Exiting.")
+    if not SMTP_USERNAME or not SMTP_PASSWORD or not ALERT_RECIPIENTS:
+        print("Missing SMTP credentials or recipient list. Exiting.")
         sys.exit(1)
 
     national_val = latest_readings.get("national", "N/A")
@@ -225,7 +223,7 @@ def send_email_report(latest_ts: datetime, latest_readings: dict, chart_path: st
     msg = MIMEMultipart("related")
     msg["Subject"] = subject
     msg["From"] = SMTP_USERNAME
-    msg["To"] = ALERT_RECIPIENT
+    msg["To"] = ", ".join(ALERT_RECIPIENTS)
 
     msg_alt = MIMEMultipart("alternative")
     msg.attach(msg_alt)
@@ -240,14 +238,14 @@ def send_email_report(latest_ts: datetime, latest_readings: dict, chart_path: st
     if SMTP_PORT == 465:
         with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as server:
             server.login(SMTP_USERNAME, SMTP_PASSWORD)
-            server.sendmail(SMTP_USERNAME, ALERT_RECIPIENT, msg.as_string())
+            server.sendmail(SMTP_USERNAME, ALERT_RECIPIENTS, msg.as_string())
     else:
         with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
             server.starttls()
             server.login(SMTP_USERNAME, SMTP_PASSWORD)
-            server.sendmail(SMTP_USERNAME, ALERT_RECIPIENT, msg.as_string())
+            server.sendmail(SMTP_USERNAME, ALERT_RECIPIENTS, msg.as_string())
 
-    print(f"Hourly report sent to {ALERT_RECIPIENT}.")
+    print(f"Hourly report sent to: {', '.join(ALERT_RECIPIENTS)}")
 
 
 def main():
