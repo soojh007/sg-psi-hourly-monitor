@@ -1,10 +1,11 @@
 name: Hourly Singapore PSI Report with 24h Chart
 
 on:
-  schedule:
-    # Runs every 5 minutes for testing
-    - cron: '5 * * * *'
+  repository_dispatch:
+    types: [hourly_report]
   workflow_dispatch:
+  schedule:
+    - cron: '5 * * * *'
 
 jobs:
   send-hourly-report:
